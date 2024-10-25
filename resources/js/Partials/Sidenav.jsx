@@ -1,6 +1,5 @@
 import React from 'react'
 import {
-    Card,
     Typography,
     List,
     ListItem,
@@ -10,7 +9,6 @@ import {
     Accordion,
     AccordionHeader,
     AccordionBody,
-    Alert,
 } from "@material-tailwind/react";
 import {
     PresentationChartBarIcon,
@@ -23,9 +21,9 @@ import {
 import {
     ChevronRightIcon,
     ChevronDownIcon,
-    CubeTransparentIcon,
 } from "@heroicons/react/24/outline";
 import { Link } from '@inertiajs/react';
+import ApplicationLogo from '@/Components/ApplicationLogo';
 
 export default function Sidenav() {
     const [open, setOpen] = React.useState(0);
@@ -33,30 +31,33 @@ export default function Sidenav() {
     const handleOpen = (value) => {
         setOpen(open === value ? 0 : value);
     };
+    const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
     return (
         <div>
-            <aside className="h-svh overflow-y-auto bg-white w-full max-w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5">
-                <div className="mb-2 flex items-center gap-4 p-4">
-                    <img src="https://docs.material-tailwind.com/img/logo-ct-dark.png" alt="brand" className="h-8 w-8" />
-                    <Typography variant="h5" color="blue-gray">
-                        Sidebar
-                    </Typography>
+            <aside className="h-svh overflow-y-auto bg-white w-full shadow-xl shadow-blue-gray-900/5">
+                <div className="mb-2 gap-4 p-4">
+                    <div className="flex w-full items-center !justify-between">
+                        <Link href={route('dashboard')} className="flex py-2.375 mr-4 items-ecnter lg:ml-0">
+                            <ApplicationLogo className="block h-9 w-auto fill-current text-gray-800 mr-2" />
+                            <Typography variant="h3" className="inline-block antialiased align-middle leading-tight uppercase" color="blue-gray">{appName}</Typography>
+                        </Link>
+                    </div>
                 </div>
                 <List>
-                    <ListItem selected={route().current('dashboard')}>
-                        <ListItemPrefix>
-                            <PresentationChartBarIcon className="h-5 w-5" />
-                        </ListItemPrefix>
-                        <Link href={route('dashboard')}>
+                    <Link href={route('dashboard')}>
+                        <ListItem selected={route().current('dashboard')}>
+                            <ListItemPrefix>
+                                <PresentationChartBarIcon className="h-5 w-5" />
+                            </ListItemPrefix>
                             Dashboard
-                        </Link>
-                    </ListItem>
+                        </ListItem>
+                    </Link>
                     <Accordion
-                        open={open === 1}
+                        open={route().current('contact.*') || open === 1}
                         icon={
                             <ChevronDownIcon
                                 strokeWidth={2.5}
-                                className={`mx-auto h-4 w-4 transition-transform ${open === 1 ? "rotate-180" : ""}`}
+                                className={`mx-auto h-4 w-4 transition-transform ${route().current('contact.*') ? "rotate-180" : ""}`}
                             />
                         }
                     >
@@ -66,18 +67,20 @@ export default function Sidenav() {
                                     <PresentationChartBarIcon className="h-5 w-5" />
                                 </ListItemPrefix>
                                 <Typography color="blue-gray" className="mr-auto font-normal">
-                                    Dashboard
+                                    Pages
                                 </Typography>
                             </AccordionHeader>
                         </ListItem>
                         <AccordionBody className="py-1">
                             <List className="p-0">
-                                <ListItem>
-                                    <ListItemPrefix>
-                                        <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
-                                    </ListItemPrefix>
-                                    Analytics
-                                </ListItem>
+                                <Link href={route('contact.index')}>
+                                    <ListItem selected={route().current('contact.*')}>
+                                        <ListItemPrefix>
+                                            <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
+                                        </ListItemPrefix>
+                                        Contacts
+                                    </ListItem>
+                                </Link>
                                 <ListItem>
                                     <ListItemPrefix>
                                         <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
@@ -139,12 +142,14 @@ export default function Sidenav() {
                             <Chip value="14" size="sm" variant="ghost" color="blue-gray" className="rounded-full" />
                         </ListItemSuffix>
                     </ListItem>
-                    <ListItem>
-                        <ListItemPrefix>
-                            <UserCircleIcon className="h-5 w-5" />
-                        </ListItemPrefix>
-                        Profile
-                    </ListItem>
+                    <Link href={route('profile.edit')}>
+                        <ListItem selected={route().current('profile.*')}>
+                            <ListItemPrefix>
+                                <UserCircleIcon className="h-5 w-5" />
+                            </ListItemPrefix>
+                            Profile
+                        </ListItem>
+                    </Link>
                     <ListItem>
                         <ListItemPrefix>
                             <Cog6ToothIcon className="h-5 w-5" />
