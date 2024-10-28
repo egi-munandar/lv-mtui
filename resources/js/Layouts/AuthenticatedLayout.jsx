@@ -2,6 +2,7 @@ import ApplicationLogo from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
+import AppDrawer from '@/Partials/AppDrawer';
 import Sidenav from '@/Partials/Sidenav';
 import { toggleSidebar } from '@/store/sidebarSlice';
 import { Bars3Icon, ChevronDoubleRightIcon } from '@heroicons/react/24/outline';
@@ -11,24 +12,24 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 export default function AuthenticatedLayout({ header, children }) {
-    const [sidebarOpen, setSidebarOpen] = useRemember({
-        open: true
-    }, 'Contact/ContactPage')
     const user = usePage().props.auth.user;
+    const [drawerOpen, setDrawerOpen] = useState(false)
 
     const sdOpen = useSelector(s => s.sidebar.open)
     const dispatch = useDispatch()
 
     const toggle = () => dispatch(toggleSidebar())
-
+    const toggleDrawer = () => setDrawerOpen(!drawerOpen)
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
-
     return (
         <div className="min-h-screen h-full bg-gray-100">
             <div className="flex h-full w-full bg-gray-50">
                 <div className={`${sdOpen ? 'lg:w-[20%]' : ''} w-0 transition-all duration-500 fixed h-full bg-red-200`}>
                     <Sidenav />
+                </div>
+                <div className={`${drawerOpen ? 'w-full' : ''} lg:w-0 h-full fixed z-10`}>
+                    <AppDrawer drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen} />
                 </div>
                 <div className={`flex-1 w-full transition-all duration-300 ${sdOpen ? 'lg:ml-[20%]' : ''}`}>
                     <nav className="border-b border-gray-100 bg-white">
@@ -38,19 +39,10 @@ export default function AuthenticatedLayout({ header, children }) {
                                     <IconButton onClick={toggle} variant="text" color="gray" className="opacity-0 w-0 lg:opacity-100  m-auto delay-100 ease-in-out lg:w-10">
                                         <Bars3Icon strokeWidth="2" className="h-6 w-6" />
                                     </IconButton>
-                                    <IconButton onClick={toggle} variant="text" color="gray" className="w-10 opacity-100 m-auto delay-100 ease-in-out lg:opacity-0">
+                                    <IconButton onClick={toggleDrawer} variant="text" color="gray" className={`w-10 opacity-100 m-auto delay-100 ease-in-out lg:opacity-0`}>
                                         <ChevronDoubleRightIcon strokeWidth="2" className="h-6 w-6" />
                                     </IconButton>
-                                    <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                        <NavLink
-                                            href={route('dashboard')}
-                                            active={route().current('dashboard')}
-                                        >
-                                            Dashboard
-                                        </NavLink>
-                                    </div>
                                 </div>
-
                                 <div className="hidden sm:ms-6 sm:flex sm:items-center">
                                     <div className="relative ms-3">
                                         <Dropdown>
@@ -145,15 +137,6 @@ export default function AuthenticatedLayout({ header, children }) {
                                 ' sm:hidden'
                             }
                         >
-                            <div className="space-y-1 pb-3 pt-2">
-                                <ResponsiveNavLink
-                                    href={route('dashboard')}
-                                    active={route().current('dashboard')}
-                                >
-                                    Dashboard
-                                </ResponsiveNavLink>
-                            </div>
-
                             <div className="border-t border-gray-200 pb-1 pt-4">
                                 <div className="px-4">
                                     <div className="text-base font-medium text-gray-800">
@@ -186,7 +169,7 @@ export default function AuthenticatedLayout({ header, children }) {
                             </div>
                         </header>
                     )}
-                    <main>{children}</main>
+                    <main className="min-h-svh w-full">{children}</main>
                 </div>
             </div>
 
