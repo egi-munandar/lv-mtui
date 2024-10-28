@@ -10,10 +10,19 @@ class ContactController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $r)
     {
+        $q = $r->q;
+        if ($q != "") {
+            $contact = Contact::where('name', 'LIKE', '%' . $q . '%')->orWhere('email', 'LIKE', '%' . $q . '%')->paginate(10)->setPath('');
+            $pagination = $contact->appends(array(
+                'q' => $r->q
+            ));
+        } else {
+            $pagination = Contact::paginate(10);
+        }
         return inertia()->render('Contact/ContactPage', [
-            'contacts' => Contact::paginate(10)
+            'contacts' => $pagination
         ]);
     }
 
@@ -28,9 +37,18 @@ class ContactController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $r)
     {
-        //
+        $r->validate([
+            'name' => 'required',
+        ]);
+        Contact::create([
+            'name' => $r->name,
+            'email' => $r->email,
+            'phone' => $r->phone,
+            'company' => $r->company,
+        ]);
+        return redirect()->back();
     }
 
     /**
@@ -52,9 +70,18 @@ class ContactController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Contact $contact)
+    public function update(Request $r, Contact $contact)
     {
-        //
+        $r->validate([
+            'name' => 'required',
+        ]);
+        $contact->update([
+            'name' => $r->name,
+            'email' => $r->email,
+            'phone' => $r->phone,
+            'company' => $r->company,
+        ]);
+        return redirect()->back();
     }
 
     /**
@@ -62,6 +89,7 @@ class ContactController extends Controller
      */
     public function destroy(Contact $contact)
     {
-        //
+        $contact->delete();
+        return redirect()->back();
     }
 }
